@@ -36,12 +36,12 @@ def draw_line(p1, p2):
     y = (1 - t / 100) * y1 + t / 100 * y2
 
 
-running = True
+running, waiting = True, True
 x, y = TUK_WHIDTH // 2, TUK_HEIGHT // 2
 a_x, a_y = TUK_WHIDTH // 2, TUK_HEIGHT // 2
+point_c = [x, y]
+arrow_list = [[0, 0]]
 frame, t = 0, 0
-arrow_list = []
-waiting = True
 
 hide_cursor()
 
@@ -55,10 +55,17 @@ while running:
     for i in arrow_list:
         arrow.draw(i[0], i[1])
 
-    # if x < click_p[0][0]:
-    #     character.clip_draw(frame * 100, 100, 100, 100, x, y)  # right
-    # else:
-    #     character.clip_draw(frame * 100, 0, 100, 100, x, y)  # left
+    if x < arrow_list[0][0]:
+        character.clip_draw(frame * 100, 100, 100, 100, x, y)  # right
+    else:
+        character.clip_draw(frame * 100, 0, 100, 100, x, y)  # left
+
+    if arrow_list[0] == [x, y]:
+        point_c = [x, y]
+        t = 0
+        arrow_list.pop(0)
+
+    draw_line(point_c, arrow_list[0])
 
     update_canvas()
     handle_events()
