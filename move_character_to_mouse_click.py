@@ -1,5 +1,4 @@
 from pico2d import *
-from random import *
 
 open_canvas()
 
@@ -11,7 +10,9 @@ arrow = load_image('hand_arrow.png')
 
 
 def handle_events():
-    global running, a_x, a_y, p_h
+    global running, waiting
+    global a_x, a_y, arrow_list
+
     events = get_events()
     for event in events:
         if event.type == SDL_QUIT:
@@ -22,7 +23,7 @@ def handle_events():
             a_x, a_y = event.x, TUK_HEIGHT - 1 - event.y
         elif event.type == SDL_MOUSEBUTTONDOWN:
             if event.button == SDL_BUTTON_LEFT:
-                p_h[0], p_h[1] = event.x, TUK_HEIGHT - 1 - event.y
+                arrow_list.append([event.x, TUK_HEIGHT - 1 - event.y])
 
 def draw_line(p1, p2):
     global t, x, y
@@ -35,14 +36,12 @@ def draw_line(p1, p2):
     y = (1 - t / 100) * y1 + t / 100 * y2
 
 
-
 running = True
 x, y = TUK_WHIDTH // 2, TUK_HEIGHT // 2
 a_x, a_y = TUK_WHIDTH // 2, TUK_HEIGHT // 2
-p_c = [x, y]
-p_h = [randint(0, TUK_WHIDTH), randint(0, TUK_HEIGHT)]
-frame = 0
-t = 0
+frame, t = 0, 0
+arrow_list = []
+waiting = True
 
 hide_cursor()
 
@@ -51,21 +50,15 @@ while running:
 
     tuk_ground.draw(TUK_WHIDTH // 2, TUK_HEIGHT // 2)
 
-    if x == p_h[0] and y == p_h[1]:
-        #p_h[0], p_h[1] = randint(0, TUK_WHIDTH), randint(0, TUK_HEIGHT)
-        p_c = [x, y]
-        t = 0
-
-    arrow.draw(p_h[0], p_h[1])
-
     arrow.draw(a_x, a_y)
 
-    if p_c[0] <= p_h[0]:
-        character.clip_draw(frame * 100, 100, 100, 100, x, y)  # right
-    else:
-        character.clip_draw(frame * 100, 0, 100, 100, x, y)  # left
+    for i in arrow_list:
+        arrow.draw(i[0], i[1])
 
-    draw_line(p_c, p_h)
+    # if x < click_p[0][0]:
+    #     character.clip_draw(frame * 100, 100, 100, 100, x, y)  # right
+    # else:
+    #     character.clip_draw(frame * 100, 0, 100, 100, x, y)  # left
 
     update_canvas()
     handle_events()
