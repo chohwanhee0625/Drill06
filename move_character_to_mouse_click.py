@@ -10,7 +10,7 @@ arrow = load_image('hand_arrow.png')
 
 
 def handle_events():
-    global running, waiting
+    global running
     global a_x, a_y, arrow_list
 
     events = get_events()
@@ -25,6 +25,7 @@ def handle_events():
             if event.button == SDL_BUTTON_LEFT:
                 arrow_list.append([event.x, TUK_HEIGHT - 1 - event.y])
 
+
 def draw_line(p1, p2):
     global t, x, y
 
@@ -36,11 +37,11 @@ def draw_line(p1, p2):
     y = (1 - t / 100) * y1 + t / 100 * y2
 
 
-running, waiting = True, True
+running = True
 x, y = TUK_WHIDTH // 2, TUK_HEIGHT // 2
 a_x, a_y = TUK_WHIDTH // 2, TUK_HEIGHT // 2
 point_c = [x, y]
-arrow_list = [[0, 0]]
+arrow_list = [[TUK_WHIDTH, TUK_HEIGHT]]
 frame, t = 0, 0
 
 hide_cursor()
@@ -52,20 +53,21 @@ while running:
 
     arrow.draw(a_x, a_y)
 
-    for i in arrow_list:
+    for i in arrow_list[1:]:
         arrow.draw(i[0], i[1])
 
-    if x < arrow_list[0][0]:
-        character.clip_draw(frame * 100, 100, 100, 100, x, y)  # right
-    else:
-        character.clip_draw(frame * 100, 0, 100, 100, x, y)  # left
-
-    if arrow_list[0] == [x, y]:
+    if len(arrow_list) > 1 and arrow_list[1] == [x, y]:
         point_c = [x, y]
         t = 0
         arrow_list.pop(0)
 
-    draw_line(point_c, arrow_list[0])
+    if len(arrow_list) == 1 or len(arrow_list) > 1 and x < arrow_list[1][0]:
+        character.clip_draw(frame * 100, 100, 100, 100, x, y)  # right
+    else:
+        character.clip_draw(frame * 100, 0, 100, 100, x, y)  # left
+
+    if len(arrow_list) > 1:
+        draw_line(point_c, arrow_list[1])
 
     update_canvas()
     handle_events()
